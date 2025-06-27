@@ -2,20 +2,6 @@ import { Token, PrismaToken } from '~/types/token';
 import { PrismaClient } from '../../generated/prisma';
 import { CreateTokenDto, TokenQueryDto, UpdateTokenDto } from '../dtos/token.dto';
 
-// Response DTO for API
-interface TokenResponseDto {
-    id: string;
-    logo: string;
-    name: string;
-    symbol: string;
-    totalSupply: number;
-    priceUsd: number;
-    description: string;
-    website: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
 class TokenService {
     private prisma = new PrismaClient();
 

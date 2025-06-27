@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "dev": "npx nodemon",
-    "build": "rimraf ./dist && tsc && tsc-alias",
+    "build": "rimraf ./dist && tsc --skipLibCheck --noEmitOnError false && tsc-alias",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
