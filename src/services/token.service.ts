@@ -1,6 +1,6 @@
 import { Token, PrismaToken } from '~/types/token';
+import { PrismaClient } from '../../generated/prisma';
 import { CreateTokenDto, TokenQueryDto, UpdateTokenDto } from '../dtos/token.dto';
-import { PrismaClient } from '@prisma/client/extension';
 
 class TokenService {
     private prisma = new PrismaClient();
