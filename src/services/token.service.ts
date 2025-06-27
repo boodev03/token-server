@@ -1,4 +1,4 @@
-import { Token, PrismaToken } from '~/types/token';
+import { Token, PrismaToken } from '../types/token';
 import { PrismaClient } from '@prisma/client'
 import { CreateTokenDto, TokenQueryDto, UpdateTokenDto } from '../dtos/token.dto';
 

@@ -7,7 +7,7 @@ import {
     TokenSymbolParamsDto,
     TokenQueryDto
 } from '../dtos/token.dto';
-import { validateDto, validateMultiple } from '~/middleware';
+import { validateDto, validateMultiple } from '../middleware';
 
 const router = Router();
 
