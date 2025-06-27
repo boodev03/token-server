@@ -5,7 +5,6 @@ import 'reflect-metadata'; // Must be first import
 import tokenRoutes from "./routes/token.route";
 import uploadRoutes from "./routes/upload.route";
 
-// Load environment variables
 dotenv.config();
 
 const app = express();

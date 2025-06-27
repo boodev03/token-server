@@ -3,7 +3,6 @@ import { plainToClass, plainToInstance } from 'class-transformer';
 import { Request, Response, NextFunction } from 'express';
 import 'reflect-metadata';
 
-// Interface for validation options
 interface ValidationOptions {
     skipMissingProperties?: boolean;
     whitelist?: boolean;
@@ -19,7 +18,6 @@ export const validateDto = (
     return (req: Request, res: Response, next: NextFunction): void => {
         (async () => {
             try {
-                // Default options
                 const validationOptions = {
                     skipMissingProperties: false,
                     whitelist: true,

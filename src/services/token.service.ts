@@ -5,7 +5,6 @@ import { CreateTokenDto, TokenQueryDto, UpdateTokenDto } from '../dtos/token.dto
 class TokenService {
     private prisma = new PrismaClient();
 
-    // Create a new token
     async createToken(dto: CreateTokenDto): Promise<Token> {
         // Check if symbol already exists
         const existingToken = await this.prisma.token.findFirst({
@@ -35,7 +34,6 @@ class TokenService {
     async getTokens(params: TokenQueryDto): Promise<{ tokens: Token[], total: number }> {
         const where: any = {};
 
-        // Apply search filter (fixed - removed duplicate)
         if (params.search) {
             const searchLower = params.search.toLowerCase();
             where.OR = [
@@ -45,16 +43,13 @@ class TokenService {
             ];
         }
 
-        // Apply symbol filter
         if (params.symbol) {
             where.symbol = params.symbol;
         }
 
-        // Build orderBy with consistent ordering (FIXED - added secondary sort)
-        const orderBy: any[] = []; // Changed to array for multiple sorts
+        const orderBy: any[] = [];
 
         if (params.sort_by) {
-            // Map frontend field names to database field names
             const fieldMapping: Record<string, string> = {
                 'priceUsd': 'priceUsd',
                 'createdAt': 'createdAt',
@@ -65,26 +60,22 @@ class TokenService {
             const dbField = fieldMapping[params.sort_by] || params.sort_by;
             orderBy.push({ [dbField]: params.sort_order || 'asc' });
         } else {
-            // Default sort by createdAt desc
             orderBy.push({ createdAt: 'desc' });
         }
 
-        // CRITICAL: Always add id as secondary sort for consistent pagination
         orderBy.push({ id: 'asc' });
 
-        // Get total count
         const total = await this.prisma.token.count({ where });
 
-        // Apply pagination
         const page = Number(params.page) || 1;
         const limit = Number(params.limit) || 10;
         const skip = (page - 1) * limit;
 
-        console.log('Pagination params:', { page, limit, skip, orderBy }); // Enhanced debug
+        console.log('Pagination params:', { page, limit, skip, orderBy });
 
         const tokens = await this.prisma.token.findMany({
             where,
-            orderBy, // Use the array of sort orders
+            orderBy,
             skip,
             take: limit
         });
@@ -95,7 +86,6 @@ class TokenService {
         };
     }
 
-    // Get token by ID
     async getTokenById(id: string): Promise<Token | null> {
         const token = await this.prisma.token.findUnique({
             where: { id }
@@ -104,18 +94,7 @@ class TokenService {
         return token ? this.toResponseDto(token) : null;
     }
 
-    // Get token by symbol
-    async getTokenBySymbol(symbol: string): Promise<Token | null> {
-        const token = await this.prisma.token.findFirst({
-            where: { symbol }
-        });
-
-        return token ? this.toResponseDto(token) : null;
-    }
-
-    // Update token
     async updateToken(id: string, dto: UpdateTokenDto): Promise<Token | null> {
-        // Check if token exists
         const existingToken = await this.prisma.token.findUnique({
             where: { id }
         });
@@ -124,7 +103,6 @@ class TokenService {
             return null;
         }
 
-        // Check if symbol already exists (if updating symbol)
         if (dto.symbol) {
             const tokenWithSymbol = await this.prisma.token.findFirst({
                 where: {
@@ -155,7 +133,6 @@ class TokenService {
         return this.toResponseDto(updatedToken);
     }
 
-    // Delete token
     async deleteToken(id: string): Promise<boolean> {
         try {
             await this.prisma.token.delete({
@@ -167,51 +144,6 @@ class TokenService {
         }
     }
 
-    // Get token statistics
-    async getTokenStats(): Promise<{
-        total_tokens: number;
-        total_market_cap: number;
-        average_price: number;
-    }> {
-        const totalTokens = await this.prisma.token.count();
-
-        const tokensWithPrice = await this.prisma.token.findMany({
-            where: {
-                priceUsd: { gt: 0 },
-                totalSupply: { gt: 0 }
-            },
-            select: {
-                priceUsd: true,
-                totalSupply: true
-            }
-        });
-
-        const totalMarketCap = tokensWithPrice.reduce((sum, token) => {
-            const marketCap = Number(token.priceUsd) * Number(token.totalSupply);
-            return sum + marketCap;
-        }, 0);
-
-        const tokensWithPriceOnly = await this.prisma.token.findMany({
-            where: {
-                priceUsd: { gt: 0 }
-            },
-            select: {
-                priceUsd: true
-            }
-        });
-
-        const averagePrice = tokensWithPriceOnly.length > 0
-            ? tokensWithPriceOnly.reduce((sum, token) => sum + Number(token.priceUsd), 0) / tokensWithPriceOnly.length
-            : 0;
-
-        return {
-            total_tokens: totalTokens,
-            total_market_cap: totalMarketCap,
-            average_price: averagePrice
-        };
-    }
-
-    // Convert Prisma Token to API Token (convert BigInt and Decimal to number)
     private toResponseDto(prismaToken: PrismaToken): Token {
         return {
             id: prismaToken.id,

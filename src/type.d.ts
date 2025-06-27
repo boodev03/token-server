@@ -10,11 +10,3 @@ export interface ApiResponse<T> {
         total_pages: number;
     };
 }
-
-export interface DatabaseConfig {
-    host: string;
-    port: number;
-    user: string;
-    password: string;
-    database: string;
-}

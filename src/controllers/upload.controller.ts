@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import multer from 'multer';
 import r2Service from '../services/r2.service';
 
-// Configure multer for memory storage
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
@@ -19,7 +18,6 @@ const upload = multer({
 });
 
 class UploadController {
-    // Upload single image
     uploadImage = upload.single('image');
 
     async handleImageUpload(req: Request, res: Response): Promise<void> {
@@ -32,7 +30,6 @@ class UploadController {
                 return;
             }
 
-            // Validate file
             const validation = r2Service.validateFile(req.file);
             if (!validation.isValid) {
                 res.status(400).json({
@@ -42,7 +39,6 @@ class UploadController {
                 return;
             }
 
-            // Upload to R2
             const fileUrl = await r2Service.uploadFile(
                 req.file.buffer,
                 req.file.originalname,
@@ -69,7 +65,6 @@ class UploadController {
         }
     }
 
-    // Generate presigned URL for direct upload
     async generateUploadUrl(req: Request, res: Response): Promise<void> {
         try {
             const { fileName, contentType } = req.body;
@@ -99,7 +94,6 @@ class UploadController {
         }
     }
 
-    // Delete image
     async deleteImage(req: Request, res: Response): Promise<void> {
         try {
             const { fileUrl } = req.body;

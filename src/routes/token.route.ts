@@ -11,9 +11,6 @@ import { validateDto, validateMultiple } from '../middleware';
 
 const router = Router();
 
-// GET /api/tokens/stats - Get token statistics
-router.get('/stats', tokenController.getTokenStats);
-
 // GET /api/tokens - Get all tokens with filtering and pagination
 router.get('/',
     validateDto(TokenQueryDto, 'query'),
@@ -24,12 +21,6 @@ router.get('/',
 router.get('/:id',
     validateDto(TokenParamsDto, 'params'),
     tokenController.getTokenById
-);
-
-// GET /api/tokens/symbol/:symbol - Get token by symbol
-router.get('/symbol/:symbol',
-    validateDto(TokenSymbolParamsDto, 'params'),
-    tokenController.getTokenBySymbol
 );
 
 // POST /api/tokens - Create new token

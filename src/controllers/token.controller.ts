@@ -16,7 +16,6 @@ interface ApiResponse<T> {
 }
 
 class TokenController {
-    // Create a new token
     async createToken(req: Request, res: Response): Promise<void> {
         try {
             const dto: CreateTokenDto = req.body;
@@ -40,7 +39,6 @@ class TokenController {
         }
     }
 
-    // Get all tokens with filtering and pagination
     async getTokens(req: Request, res: Response): Promise<void> {
         try {
             const params: TokenQueryDto = req.query as any;
@@ -71,7 +69,6 @@ class TokenController {
         }
     }
 
-    // Get token by ID
     async getTokenById(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.params;
@@ -104,40 +101,6 @@ class TokenController {
         }
     }
 
-    // Get token by symbol
-    async getTokenBySymbol(req: Request, res: Response): Promise<void> {
-        try {
-            const { symbol } = req.params;
-            const token = await tokenService.getTokenBySymbol(symbol);
-
-            if (!token) {
-                const response: ApiResponse<null> = {
-                    success: false,
-                    message: 'Token not found',
-                    error: 'Token with specified symbol does not exist'
-                };
-                res.status(404).json(response);
-                return;
-            }
-
-            const response: ApiResponse<typeof token> = {
-                success: true,
-                message: 'Token retrieved successfully',
-                data: token
-            };
-
-            res.json(response);
-        } catch (error) {
-            const response: ApiResponse<null> = {
-                success: false,
-                message: 'Failed to retrieve token',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
-            res.status(500).json(response);
-        }
-    }
-
-    // Update token
     async updateToken(req: Request, res: Response): Promise<void> {
         try {
             const { id } = req.params;
@@ -198,28 +161,6 @@ class TokenController {
             const response: ApiResponse<null> = {
                 success: false,
                 message: 'Failed to delete token',
-                error: error instanceof Error ? error.message : 'Unknown error'
-            };
-            res.status(500).json(response);
-        }
-    }
-
-    // Get token statistics
-    async getTokenStats(req: Request, res: Response): Promise<void> {
-        try {
-            const stats = await tokenService.getTokenStats();
-
-            const response: ApiResponse<typeof stats> = {
-                success: true,
-                message: 'Token statistics retrieved successfully',
-                data: stats
-            };
-
-            res.json(response);
-        } catch (error) {
-            const response: ApiResponse<null> = {
-                success: false,
-                message: 'Failed to retrieve token statistics',
                 error: error instanceof Error ? error.message : 'Unknown error'
             };
             res.status(500).json(response);
